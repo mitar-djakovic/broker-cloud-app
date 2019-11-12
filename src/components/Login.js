@@ -21,10 +21,10 @@ class Login extends React.Component {
     constructor() {
         super();
         this.state = {
-            // username: 'mitar-djakovic2401993@hotmail.com',
-            // password: ' Qwer1234',
-            username: '',
-            password: ''
+            username: 'mitar-djakovic2401993@hotmail.com',
+            password: 'Qwer1234',
+            // username: '',
+            // password: ''
         }
     }
 

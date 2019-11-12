@@ -32,6 +32,7 @@ export const search = () => {
 }
 
 export const autoSearch = (access_token) => {
+    console.log('Acces token ===>', access_token)
     const autoSearchRequest = (currencies) => {
         return {
             type: AUTO_SEARCH,
@@ -42,21 +43,21 @@ export const autoSearch = (access_token) => {
     }
     return dispatch => {
         autoSearchCall(access_token)
-            // .then(res => {
-            //     //console.log(res);
-            //     dispatch(autoSearchRequest(
-            //         Object.keys(res).reduce((acc, currentCurr) => {
-            //             const currencys = res[currentCurr];
-            //             return acc.concat(currencys
-            //                 .map(currency => ({
-            //                     name: currency.name
-            //                 }))
-            //             );
-            //         }, [])
-            //     ))
-            // })
             .then(res => {
-                dispatch(autoSearchRequest(res))
+                console.log(res);
+                // dispatch(autoSearchRequest(
+                //     Object.keys(res).reduce((acc, currentCurr) => {
+                //         const currencys = res[currentCurr];
+                //         return acc.concat(currencys
+                //             .map(currency => ({
+                //                 name: currency.name
+                //             }))
+                //         );
+                //     }, [])
+                // ))
             })
+            // .then(res => {
+            //     dispatch(autoSearchRequest(res))
+            // })
     }
 }

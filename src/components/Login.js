@@ -3,12 +3,7 @@ import {
     StyleSheet, 
     Text, 
     KeyboardAvoidingView, 
-    View,
-    // TextInput,
-    Animated, 
-    Dimensions, 
-    Keyboard,
-    UIManager 
+    View
 } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';

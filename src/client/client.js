@@ -33,9 +33,15 @@ export const autoSearchCall = async (access_token) => {
     const userInfo = await fetch(`${url}/users/me`, { headers })
         .then(res => res.json());
 
-    const markets = await fetch(`${url}/users/${userInfo.id}/markets-search`, { headers })
+    console.log('UserInfo ====>', userInfo);
+
+    const id = userInfo.id;
+    console.log('ID ===>', id)
+
+    const markets = await fetch(`${url}/users/${id}/markets-search`, { headers })
         .then(res => res.json())
 
+    console.log('Markets', markets);
     return markets;
 };
 

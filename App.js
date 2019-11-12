@@ -1,19 +1,27 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Provider } from 'react-redux';
+import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
+import { store } from './src/store/index';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
-  );
+import AppLayout from "./src/components/AppLayout";
+
+export default class App extends React.Component {
+    render() {
+        return (
+            <Provider store={store}>
+                <PaperProvider theme={theme}>
+                    <AppLayout />
+                </PaperProvider>
+            </Provider>
+        );
+    }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const theme = {
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        primary: '#009788',
+        accent: 'yellow',
+    },
+};

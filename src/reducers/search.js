@@ -1,36 +1,31 @@
 import {
-    SEARCH_REQUEST,
-    SEARCH_SUCCESSFUL,
-    SEARCH_FAIL,
-    AUTO_SEARCH
+    GET_FAVORITES,
+    AUTO_SEARCH,
+    GET_CHART_DATA
 } from "../actions/actionTypes";
 
 const initialState = {
     data: [],
-    error: null
+    favorites: [],
+    chartData: []
 };
 
 export default (state = initialState, action) => {
     switch(action.type) {
         case AUTO_SEARCH:
             return {
+                ...state,
                 data: action.payload.currencies,
-                error: null
             }
-        case SEARCH_REQUEST:
+        case GET_FAVORITES:
             return {
-                data: [],
-                error: null
+                ...state,
+                favorites: action.payload.favorites
             }
-        case SEARCH_SUCCESSFUL:
+        case GET_CHART_DATA:
             return {
-                data: action.payload.currencies,
-                error: null
-            }
-        case SEARCH_FAIL:
-            return {
-                data: [],
-                error: action.payload.error
+                ...state,
+                chartData: action.payload.chartData
             }
         default:
             return state;

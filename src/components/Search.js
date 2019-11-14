@@ -23,21 +23,26 @@ class Search extends React.Component {
     constructor() {
         super();
         this.state = {
-            currency: ''
+            currency: '',
         }; 
     }
 
     componentDidMount() {
         const { autoSearch, access_token } = this.props;
-        console.log('auto search raadi');   
+        
         autoSearch(access_token);
+    }
+
+    addToFavorites = () => {
+
     }
 
     render() {
         const { currency } = this.state;
+        const { data } = this.props;
 
         return(
-            <ScrollView style={styles.container}>
+            <View style={styles.container}>
                 <View style={styles.searchSection}>
                     <Ionicons 
                         name='search'
@@ -52,7 +57,45 @@ class Search extends React.Component {
                         onChangeText={(currency) => this.setState({currency})}
                     />
                 </View>
-            </ScrollView>
+                <ScrollView style={styles.scrollSection}>
+                    {
+                        data.length > 0 ? data.map(currency => {
+                            console.log(currency)
+                            return(
+                                <View 
+                                    key={currency.id} 
+                                    style={styles.currency}
+                                >
+                                    <View style={styles.currencyInfo}>
+                                        <Text 
+                                            onPress={() => this.props.navigation.navigate('Details', {
+                                                displayName: currency.displayName,
+                                                price: currency.price.bid,
+                                                description: currency.baseInstrument.description,
+                                                id: currency.id 
+                                            })} 
+                                        >
+                                            {currency.displayName}
+                                        </Text>
+                                        <Text>${currency.price.bid}</Text>
+                                    </View>
+                                    <View>
+                                        <Ionicons 
+                                            name='heart'
+                                            size={20}
+                                            color='rgba(0, 0, 0, 0.22)'
+                                            style={{ 
+                                                paddingLeft: 10, 
+                                                paddingRight: 10 
+                                            }}
+                                        />
+                                    </View>
+                                </View>
+                            )
+                        }) : null
+                    }
+                </ScrollView>
+            </View>
         )
     }
 };
@@ -75,13 +118,14 @@ const styles = StyleSheet.create({
     container: {
         padding: 20,
         backgroundColor: '#FFFEFD',
+        flex: 1,
     },
     searchSection: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 10,
         borderRadius: 8,
+        paddingLeft: 10,
         backgroundColor: '#FAFAFA',
         shadowColor: "#000",
         shadowOffset: {
@@ -94,11 +138,32 @@ const styles = StyleSheet.create({
         width: '98%',
         marginLeft: '1%',
         marginRight: '1%',
-        marginBottom: 5
+        marginBottom: 15,
     },
     inputSearch: {
         backgroundColor: 'transparent',
         width: '100%',
         marginLeft: 10
+    },
+    scrollSection: {
+        height: '80%',
+        width: '100%',
+    },
+    currency: {
+        width: '100%',
+        padding: 14,
+        marginTop: 2,
+        marginBottom: 2,
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(0, 0, 0, 0.22)',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    currencyInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '90%',
     }
 });

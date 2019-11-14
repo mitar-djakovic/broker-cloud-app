@@ -1,38 +1,12 @@
 import {
-    SEARCH_REQUEST,
-    SEARCH_SUCCESSFUL,
-    SEARCH_FAIL,
-    AUTO_SEARCH
+    AUTO_SEARCH,
+    GET_FAVORITES,
+    GET_CHART_DATA
 } from '../actionTypes';
 
-import { autoSearchCall } from '../../client/client';
-
-export const search = () => {
-    const searchRequest = () => {
-        return {
-            type: SEARCH_REQUEST
-        }
-    }
-
-    const seaarchSuccessful = () => {
-        return {
-            type: SEARCH_SUCCESSFUL
-        }
-    }
-
-    const searchFail = () => {
-        return {
-            type: SEARCH_FAIL
-        }
-    }
-
-    return dispatch => {
-        
-    }
-}
+import { autoSearchCall, getFavoritesCall, getChartCall } from '../../client/client';
 
 export const autoSearch = (access_token) => {
-    console.log('Acces token ===>', access_token)
     const autoSearchRequest = (currencies) => {
         return {
             type: AUTO_SEARCH,
@@ -41,23 +15,47 @@ export const autoSearch = (access_token) => {
             }
         }
     }
+
     return dispatch => {
         autoSearchCall(access_token)
             .then(res => {
-                console.log(res);
-                // dispatch(autoSearchRequest(
-                //     Object.keys(res).reduce((acc, currentCurr) => {
-                //         const currencys = res[currentCurr];
-                //         return acc.concat(currencys
-                //             .map(currency => ({
-                //                 name: currency.name
-                //             }))
-                //         );
-                //     }, [])
-                // ))
+                dispatch(autoSearchRequest(res));
+            });
+    }
+};
+
+export const getFavorites = (access_token) => {
+    console.log('accesTOKEN', access_token);
+
+    const autoGetFavorites = (favorites) => {
+        return {
+            type: GET_FAVORITES,
+            payload: {
+                favorites
+            }
+        }
+    }
+
+    return dispatch => {
+        getFavoritesCall(access_token).then(res => {
+            console.log('RES ===>', res)
+        })
+    }
+};
+
+export const getChart = (access_token, id) => {
+    const getChartData = (chartData) => {
+        return {
+            type: GET_CHART_DATA,
+            payload: {
+                chartData
+            }
+        }
+    }
+    return dispatch => {
+        getChartCall(access_token, id)
+            .then(res => {
+                dispatch(getChartData(res));
             })
-            // .then(res => {
-            //     dispatch(autoSearchRequest(res))
-            // })
     }
 }

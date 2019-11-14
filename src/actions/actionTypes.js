@@ -5,3 +5,5 @@ export const SEARCH_REQUEST = 'SEARCH_REQUEST';
 export const SEARCH_SUCCESSFUL = 'SEARCH_SUCCESSFUL';
 export const SEARCH_FAIL = 'SEARCH_FAIL';
 export const AUTO_SEARCH = 'AUTO_SEARCH';
+export const GET_FAVORITES = 'GET_FAVORITES';
+export const GET_CHART_DATA = 'GET_CHART_DATA';

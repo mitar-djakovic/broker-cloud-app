@@ -33,15 +33,11 @@ export const autoSearchCall = async (access_token) => {
     const userInfo = await fetch(`${url}/users/me`, { headers })
         .then(res => res.json());
 
-    console.log('UserInfo ====>', userInfo);
-
     const id = userInfo.id;
-    console.log('ID ===>', id)
 
-    const markets = await fetch(`${url}/users/${id}/markets-search`, { headers })
+    const markets = await fetch(`${url}/users/${id}/symbols`, { headers })
         .then(res => res.json())
 
-    console.log('Markets', markets);
     return markets;
 };
 
@@ -55,3 +51,51 @@ export const currecnyCall = async (access_token, currecyId) => {
     const currecy = await fetch(`${url}/users/${userInfo.id}/markets/${currecyId}`);
     return currecy;
 }; 
+
+export const getFavoritesCall = async (access_token) => {
+    const headers = new Headers();
+    headers.append('Authorization', `Bearer ${access_token}`);
+    headers.append('Content-Type', 'application/json');
+
+    const userInfo = await fetch(`${url}/users/me`, { headers })
+        .then(res => res.json());
+
+    const id = userInfo.id;
+    
+    const favorites = await fetch(`${url}/accounts/${id}/watchlist`, { headers })
+        .then((res => res.json()))
+    
+    return favorites;
+};
+
+export const addToFavorites = async (access_token, symbolId) => {
+    const headers = new Headers();
+    headers.append('Authorization', `Bearer ${access_token}`);
+    headers.append('Content-Type', 'application/json');
+
+    const userInfo = await fetch(`${url}/users/me`, { headers })
+        .then(res => res.json());
+
+    const id = userInfo.id;
+    
+    const symbol = await fetch(`${url}/accounts/${id}/watchlist/${symbolId}`, { 
+        headers,
+        method: 'PUT',
+    })
+    
+    return symbol;
+};
+
+export const getChartCall = async (access_token, symbolId) => {
+    const headers = new Headers();
+    headers.append('Authorization', `Bearer ${access_token}`);
+
+    const userInfo = await fetch(`${url}/users/me`, { headers })
+        .then(res => res.json());
+
+    const id = userInfo.id;
+
+    const chart = await fetch(`${url}/users/${id}/symbols/${symbolId}/chart`, { headers })
+        .then(res => res.json());
+    return chart;
+}

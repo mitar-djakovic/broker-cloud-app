@@ -38,7 +38,6 @@ export const login = (username, password) => {
                 return res.json();  
             })
             .then(res => {
-                console.log('res ===>', res);
                 if(!res.access_token) {
                     dispatch(loginFail(res.message))
                     //return Promise.resolve(res.access_token);

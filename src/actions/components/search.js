@@ -10,9 +10,9 @@ import {
     AUTO_SEARCH_ERROR,
     FILTER_DATA,
     GET_CHART_DATA,
-    ADD_TO_FAVORITES_REQUEST,
-    ADD_TO_FAVORITES_SUCCESS,
-    ADD_TO_FAVORITES_ERROR
+    FOLLOW_UNFOLLOW_REQUEST,
+    FOLLOW_UNFOLLOW_SUCCESS,
+    FOLLOW_UNFOLLOW_ERROR
 } from '../actionTypes';
 
 import { 
@@ -20,7 +20,7 @@ import {
     getFavoritesCall, 
     getChartCall, 
     getNewsCall,
-    addToFavoritesCall 
+    followUnfollowFavoriteCall 
 } from '../../client/client';
 
 export const autoSearch = (access_token) => {
@@ -175,34 +175,42 @@ export const getNews = (access_token) => {
     }
 };
 
-export const addFavorites = (access_token, symbolId) => {
+export const addFavorites = (access_token, symbolId, followStatus) => {
     console.log("ID", symbolId);
-    const addToFavoritesRequest = () => {
+    const followUnfollowRequest = () => {
         return {
-            type: ADD_TO_FAVORITES_REQUEST
+            type: FOLLOW_UNFOLLOW_REQUEST
         }
     };
 
-    const addToFavoritesSuccess = (favorite) => {
+    const followUnfollowSuccess = (favoriteStatus) => {
         return {
-            type: ADD_TO_FAVORITES_SUCCESS,
+            type: FOLLOW_UNFOLLOW_SUCCESS,
             payload: {
-                favorite
+                favoriteStatus
             }
         }
     };
 
-    const addToFavoritesError = (favoriteError) => {
+    const followUnfollowError = (favoriteError) => {
         return {
-            type: ADD_TO_FAVORITES_ERROR,
+            type: FOLLOW_UNFOLLOW_SUCCESS,
             payload: {
                 favoriteError
             }
         }
     }
     return dispatch => {
-        dispatch(addToFavoritesRequest());
+        dispatch(followUnfollowRequest());
         
-        addToFavoritesCall(access_token, symbolId).then(res => console.log('=====>',res))
+        followUnfollowFavoriteCall(access_token, symbolId).then(res => {
+            if(res.status == 200 && followStatus === true) {
+                dispatch(followUnfollowSuccess('Currency added to favorites'));
+            } else if (res.status === 200 && followStatus === false) {
+                dispatch(followUnfollowSuccess('Currency is removed from favorites'));
+            } else {
+                dispatch(followUnfollowError())
+            }
+        })
     }
 }

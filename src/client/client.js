@@ -70,7 +70,7 @@ export const getFavoritesCall = async (access_token) => {
     return favorites;
 };
 
-export const addToFavoritesCall = async (access_token, symbolId) => {
+export const followUnfollowFavoriteCall = async (access_token, symbolId, followStatus) => {
     const headers = new Headers();
     headers.append('Authorization', `Bearer ${access_token}`);
     headers.append('Content-Type', 'application/json');
@@ -84,11 +84,9 @@ export const addToFavoritesCall = async (access_token, symbolId) => {
         headers,
         method: 'PUT',
         body: JSON.stringify({
-            'following': true
+            following: followStatus
         })
     });
-
-    console.log('####', symbol)
     
     return symbol;
 };

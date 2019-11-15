@@ -10,9 +10,9 @@ import {
     GET_FAVORITES_ERROR,
     GET_CHART_DATA,
     FILTER_DATA,
-    ADD_TO_FAVORITES_REQUEST,
-    ADD_TO_FAVORITES_SUCCESS,
-    ADD_TO_FAVORITES_ERROR
+    FOLLOW_UNFOLLOW_REQUEST,
+    FOLLOW_UNFOLLOW_SUCCESS,
+    FOLLOW_UNFOLLOW_ERROR
 } from "../actions/actionTypes";
 
 const initialState = {
@@ -27,6 +27,8 @@ const initialState = {
     favoritesLoading: false,
     favorites: [],
     favoritesError: '',
+    addFavoriteLoading: false,
+    addFavoriteStatus: false
 };
 
 const filterData = (data, currency) => {
@@ -45,6 +47,10 @@ const filterData = (data, currency) => {
     })
 
     return newData;
+}
+
+const handleaddFavorites = () => {
+    
 }
 
 export default (state = initialState, action) => {
@@ -112,17 +118,22 @@ export default (state = initialState, action) => {
                 favoritesLoading: false,
                 favoritesError: action.payload.favoritesError
             }
-        case ADD_TO_FAVORITES_REQUEST:
+        case FOLLOW_UNFOLLOW_REQUEST:
             return {
                 ...state,
+                addFavoriteLoading: true,
+                addFavoriteStatus: ''
             }
-        case ADD_TO_FAVORITES_SUCCESS:
-            return {
-                ...state
-            }
-        case ADD_TO_FAVORITES_ERROR:
+        case FOLLOW_UNFOLLOW_SUCCESS:
             return {
                 ...state,
+                addFavoriteLoading: false,
+                addFavoriteStatus: action.payload.favoriteStatus
+            }
+        case FOLLOW_UNFOLLOW_ERROR:
+            return {
+                ...state,
+                addFavoriteLoading: false,
             }
         default:
             return state;

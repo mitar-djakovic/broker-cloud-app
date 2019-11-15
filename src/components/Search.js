@@ -43,15 +43,17 @@ class Search extends React.Component {
         });
     };
 
-    addToFavorites = (symbolId) => {
-        const { addFavorites, access_token } = this.props;
+    handleFollowUnfollowFavorite = (symbolId) => {
+        const { addFavorites, access_token, autoSearch } = this.props;
 
-        addFavorites(access_token, symbolId);
+        addFavorites(access_token, symbolId, true, () => {
+            autoSearch
+        });
     };
 
     render() {
         const { currency } = this.state;
-        const { data, filteredData, dataLoading } = this.props;
+        const { data, filteredData, dataLoading, addFavoriteLoading, addFavoriteStatus } = this.props;
         
         return(
             <View style={styles.container}>
@@ -122,7 +124,7 @@ class Search extends React.Component {
                                                 paddingLeft: 10, 
                                                 paddingRight: 20 
                                             }}
-                                            onPress={() => this.addToFavorites()}
+                                            onPress={() => this.handleFollowUnfollowFavorite(currency.id)}
                                         />
                                     </View>
                                 </View>
@@ -155,7 +157,7 @@ class Search extends React.Component {
                                                 paddingLeft: 10, 
                                                 paddingRight: 10 
                                             }}
-                                            onPress={() => this.addToFavorites(currency.id)}
+                                            onPress={() => this.handleFollowUnfollowFavorite(currency.id)}
                                         />
                                     </View>
                                 </View>
@@ -163,6 +165,13 @@ class Search extends React.Component {
                             
                     }
                 </ScrollView>
+                {
+                    addFavoriteLoading ?
+                        <View style={styles.follwoUnfollowFavorite}>
+                            <Text>{addFavoriteStatus}</Text>
+                        </View> 
+                    : null
+                }
             </View>
         )
     }
@@ -170,12 +179,14 @@ class Search extends React.Component {
 
 const mapStateToProps = ({ 
     login: { access_token },
-    search: { data, filteredData, dataLoading }
+    search: { data, filteredData, dataLoading, addFavoriteLoading, addFavoriteStatus }
 }) => ({
     access_token,
     data,
     filteredData,
-    dataLoading
+    dataLoading,
+    addFavoriteLoading,
+    addFavoriteStatus
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
@@ -237,5 +248,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '80%',
+    },
+    follwoUnfollowFavorite: {
+        width: '100%',
+        position: 'absolute',
+        marginLeft: 20,
+        padding: 10,
+        borderRadius: 5,
+        bottom: 10,
+        backgroundColor: '#009688',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+        elevation: 3,
     }
 });

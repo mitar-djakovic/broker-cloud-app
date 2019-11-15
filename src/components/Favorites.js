@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getFavorites } from '../actions/components/search';
+import { getFavorites, addFavorites } from '../actions/components/search';
 import Ionicons from 'react-native-vector-icons/FontAwesome';
 
 class Favorites extends React.Component {
@@ -21,8 +21,17 @@ class Favorites extends React.Component {
         getFavorites(access_token)
     }
 
+    handleFollowUnfollowFavorite = (symbolId) => {
+        const { addFavorites, access_token, getFavorites } = this.props;
+
+        addFavorites(access_token, symbolId, false, () => {
+            console.log('jel ovo radi')
+            getFavorites
+        });
+    };
+
     render() {
-        const { favorites, favoritesLoading, favoritesError } = this.props;
+        const { favorites, favoritesLoading, addFavoriteLoading} = this.props;
         console.log('FAVORITES', favorites)
         return(
             <View style={styles.container}>
@@ -47,11 +56,47 @@ class Favorites extends React.Component {
                             {
                                 favorites.length === 0 ? 
                                     <Text style={styles.noFav}>No Favorites</Text> :
-                                    favorites.map(fav => {
-                                        console.log('FAV', fav);
-                                    })
+                                    favorites.map(fav => (
+                                        <View 
+                                            key={fav.id} 
+                                            style={styles.currency}
+                                        >
+                                            <View style={styles.currencyInfo}>
+                                                <Text 
+                                                    onPress={() => this.props.navigation.navigate('Details', {
+                                                        displayName: fav.displayName,
+                                                        price: fav.price.bid,
+                                                        description: fav.baseInstrument.description,
+                                                        id: fav.id 
+                                                    })} 
+                                                >
+                                                    {fav.displayName}
+                                                </Text>
+                                                <Text>${fav.price.bid}</Text>
+                                            </View>
+                                            <View>
+                                                <Ionicons 
+                                                    name='heart'
+                                                    size={20}
+                                                    color='rgba(0, 0, 0, 0.22)'
+                                                    style={{ 
+                                                        paddingLeft: 10, 
+                                                        paddingRight: 20 
+                                                    }}
+                                                    onPress={() => this.handleFollowUnfollowFavorite(fav.id)}
+                                                />
+                                            </View>
+                                        </View>
+                                    ))
                             }
                         </ScrollView> : null
+                }
+                {
+                    addFavoriteLoading ?
+                        <View style={styles.follwoUnfollowFavorite}>
+                            <Text>LOL</Text>
+                        </View> 
+                    : null
                 }
             </View>
         )
@@ -60,16 +105,18 @@ class Favorites extends React.Component {
 
 const mapStateToProps = ({ 
     login: { access_token },
-    search: { favorites, favoritesLoading, favoritesError }
+    search: { favorites, favoritesLoading, favoritesError, addFavoriteLoading }
 }) => ({
     access_token,
     favorites,
     favoritesLoading,
-    favoritesError
+    favoritesError,
+    addFavoriteLoading
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-    getFavorites
+    getFavorites,
+    addFavorites
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Favorites);
@@ -131,5 +178,22 @@ const styles = StyleSheet.create({
         fontSize: 30,
         color: '#009688',
         marginTop: '50%'
+    },
+    follwoUnfollowFavorite: {
+        width: '100%',
+        position: 'absolute',
+        marginLeft: 20,
+        padding: 10,
+        borderRadius: 5,
+        bottom: 10,
+        backgroundColor: '#009688',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+        elevation: 3,
     }
 });

@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { TextInput } from 'react-native-paper';
 import { Button } from 'react-native-paper';
 import { login } from '../actions/components/login';
-
+import Ionicons from 'react-native-vector-icons/FontAwesome';
 
 class Login extends React.Component {
     constructor() {
@@ -27,12 +27,10 @@ class Login extends React.Component {
         e.preventDefault();
 
         const { login } = this.props;
-        console.log(this.state.username, this.state.password);
+
         login(this.state.username, this.state.password);
-        // .then(access_token => {
-        //     search(access_token);
-        // });
-    }
+    };
+
     render() {
         const { loading, error, errorMsg } = this.props;
         const { username, password } = this.state;
@@ -82,8 +80,10 @@ class Login extends React.Component {
                         style={styles.button} 
                         mode="contained" 
                         onPress={this.handleSubmit}
+                        icon={loading ? <Ionicons name='heart' /> : null}
+                        loading={loading}
                     >
-                        {loading ? 'loading...' : 'Sign in'}
+                        {loading ? null : 'Sign in'}
                     </Button>
                 </View>
             </KeyboardAvoidingView>

@@ -1,8 +1,9 @@
 import React from "react";
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { getChart } from '../actions/components/search';
+import { getChart, getNews } from '../actions/components/search';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { Button } from 'react-native-paper';
 
 class Details extends React.Component {
     constructor() {
@@ -22,14 +23,15 @@ class Details extends React.Component {
     }
     
     componentDidMount() {
-        const { getChart, access_token } = this.props;
+        const { getChart, getNews, access_token } = this.props;
         const { id } = this.props.navigation.state.params;
 
-        getChart(access_token, id);
+        // getChart(access_token, id);
+        getNews(access_token);
     }
     render() {
-        const { chartData } = this.props;
-        // console.log(chartData)
+        const { chartData, news, newsLoading, newsError } = this.props;
+        
         return(
             <ScrollView style={styles.container}>
                 <View style={styles.chartContainer}>
@@ -41,7 +43,13 @@ class Details extends React.Component {
                 </View>
                 <View style={styles.newsContainer}>
                     <Text style={styles.title}>News</Text>
+                    {newsError.length ? <Text style={styles.newsError}>{newsError}</Text> : null}
                 </View>
+                <Button
+                    loading={newsLoading ? 'loading' : null}
+                >
+                    {newsLoading ? null : 'Show More'}
+                </Button>
             </ScrollView>
         )
     }
@@ -49,14 +57,18 @@ class Details extends React.Component {
 
 const mapStateToProps = ({ 
     login: { access_token },
-    search: { chartData }
+    search: { chartData, news, newsLoading, newsError }
 }) => ({
     access_token,
-    chartData
+    chartData,
+    news,
+    newsLoading,
+    newsError
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-    getChart
+    getChart,
+    getNews
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Details);
@@ -86,5 +98,8 @@ const styles = StyleSheet.create({
     newsContainer: {
         width: '100%',
         padding: 20
+    },
+    newsError: {
+        textAlign: 'center'
     }
 });

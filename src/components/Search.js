@@ -9,7 +9,7 @@ import {
 import Ionicons from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { autoSearch } from '../actions/components/search';
+import { autoSearch, filterData, addFavorites } from '../actions/components/search';
 
 class Search extends React.Component {
     static navigationOptions = {
@@ -31,16 +31,28 @@ class Search extends React.Component {
         const { autoSearch, access_token } = this.props;
         
         autoSearch(access_token);
-    }
+    };
 
-    addToFavorites = () => {
+    handleSearch = (currency) => {
+        const { filterData } = this.props;
 
-    }
+        this.setState({
+            currency
+        }, () => {
+            filterData(currency)
+        });
+    };
+
+    addToFavorites = (symbolId) => {
+        const { addFavorites, access_token } = this.props;
+
+        addFavorites(access_token, symbolId);
+    };
 
     render() {
         const { currency } = this.state;
-        const { data } = this.props;
-
+        const { data, filteredData, dataLoading } = this.props;
+        
         return(
             <View style={styles.container}>
                 <View style={styles.searchSection}>
@@ -54,14 +66,69 @@ class Search extends React.Component {
                         placeholder='Search here'
                         name='currency'
                         value={currency}
-                        onChangeText={(currency) => this.setState({currency})}
+                        onChangeText={(currency) => this.handleSearch(currency)}
                     />
+                    {
+                        currency.length ?
+                            <Ionicons 
+                                name='remove'
+                                size={20}
+                                color='rgba(0, 0, 0, 0.22)'
+                                onPress={(currency) => this.setState({currency: ''})}
+                            /> : null
+                    }
                 </View>
+                {
+                    dataLoading ?
+                        <Ionicons 
+                            name='spinner'
+                            size={24}
+                            color='#009688'
+                            style={{
+                                textAlign: 'center',
+                                position: 'relative',
+                                top: '40%'
+                            }}
+                        />
+                    : null
+                }
                 <ScrollView style={styles.scrollSection}>
                     {
-                        data.length > 0 ? data.map(currency => {
-                            console.log(currency)
-                            return(
+                        dataLoading === false && currency.length && filteredData.length ?
+                            filteredData.map(currency => (
+                                <View 
+                                    key={currency.id} 
+                                    style={styles.currency}
+                                >
+                                    <View style={styles.currencyInfo}>
+                                        <Text 
+                                            onPress={() => this.props.navigation.navigate('Details', {
+                                                displayName: currency.displayName,
+                                                price: currency.price.bid,
+                                                description: currency.baseInstrument.description,
+                                                id: currency.id 
+                                            })} 
+                                        >
+                                            {currency.displayName}
+                                        </Text>
+                                        <Text>${currency.price.bid}</Text>
+                                    </View>
+                                    <View>
+                                        <Ionicons 
+                                            name='heart'
+                                            size={20}
+                                            color='rgba(0, 0, 0, 0.22)'
+                                            style={{ 
+                                                paddingLeft: 10, 
+                                                paddingRight: 20 
+                                            }}
+                                            onPress={() => this.addToFavorites()}
+                                        />
+                                    </View>
+                                </View>
+                            ))
+                        :
+                            data.map(currency => (
                                 <View 
                                     key={currency.id} 
                                     style={styles.currency}
@@ -88,11 +155,12 @@ class Search extends React.Component {
                                                 paddingLeft: 10, 
                                                 paddingRight: 10 
                                             }}
+                                            onPress={() => this.addToFavorites(currency.id)}
                                         />
                                     </View>
                                 </View>
-                            )
-                        }) : null
+                            ))
+                            
                     }
                 </ScrollView>
             </View>
@@ -102,14 +170,18 @@ class Search extends React.Component {
 
 const mapStateToProps = ({ 
     login: { access_token },
-    search: { data }
+    search: { data, filteredData, dataLoading }
 }) => ({
     access_token,
-    data
+    data,
+    filteredData,
+    dataLoading
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-    autoSearch
+    autoSearch,
+    filterData,
+    addFavorites
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Search);
@@ -142,8 +214,8 @@ const styles = StyleSheet.create({
     },
     inputSearch: {
         backgroundColor: 'transparent',
-        width: '100%',
-        marginLeft: 10
+        width: '80%',
+        marginLeft: 10,
     },
     scrollSection: {
         height: '80%',
@@ -164,6 +236,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        width: '90%',
+        width: '80%',
     }
 });

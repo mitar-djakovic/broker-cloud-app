@@ -9,7 +9,7 @@ import {
 import Ionicons from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { autoSearch, filterData, addFavorites } from '../actions/components/search';
+import { autoSearch, filterData, addFavorites, getFavorites } from '../actions/components/search';
 
 class Search extends React.Component {
     static navigationOptions = {
@@ -28,9 +28,10 @@ class Search extends React.Component {
     }
 
     componentDidMount() {
-        const { autoSearch, access_token } = this.props;
+        const { autoSearch, access_token, getFavorites } = this.props;
         
         autoSearch(access_token);
+        getFavorites(access_token);
     };
 
     handleSearch = (currency) => {
@@ -44,16 +45,30 @@ class Search extends React.Component {
     };
 
     handleFollowUnfollowFavorite = (symbolId) => {
-        const { addFavorites, access_token, autoSearch } = this.props;
+        const { addFavorites, access_token, autoSearch, getFavorites, favorites } = this.props;
 
-        addFavorites(access_token, symbolId, true, () => {
-            autoSearch
-        });
+        addFavorites(access_token, symbolId, true);
+        getFavorites(access_token);
     };
+
+    handleColor = (id) => {
+        const { favorites } = this.props;
+
+        return favorites.map(fav => {
+            if (fav.id === id) {
+                return '#FF00C9'
+            } else {
+                return 'rgba(0, 0, 0, 0.22)'
+            }
+        })
+    }
 
     render() {
         const { currency } = this.state;
-        const { data, filteredData, dataLoading, addFavoriteLoading, addFavoriteStatus } = this.props;
+        const { 
+            data, filteredData, dataLoading, addFavoriteLoading, 
+            addFavoriteStatus, favorites, getFavorites, access_token 
+        } = this.props;
         
         return(
             <View style={styles.container}>
@@ -80,6 +95,7 @@ class Search extends React.Component {
                             /> : null
                     }
                 </View>
+                
                 {
                     dataLoading ?
                         <Ionicons 
@@ -92,79 +108,80 @@ class Search extends React.Component {
                                 top: '40%'
                             }}
                         />
-                    : null
+                    : 
+                    <ScrollView style={styles.scrollSection}>
+                        {
+                            currency.length && filteredData.length ?
+                                filteredData.map(currency => (
+                                    <View 
+                                        key={currency.id} 
+                                        style={styles.currency}
+                                    >
+                                        <View style={styles.currencyInfo}>
+                                            <Text 
+                                                onPress={() => this.props.navigation.navigate('Details', {
+                                                    displayName: currency.displayName,
+                                                    price: currency.price.bid,
+                                                    description: currency.baseInstrument.description,
+                                                    id: currency.id 
+                                                })} 
+                                            >
+                                                {currency.displayName}
+                                            </Text>
+                                            <Text>${currency.price.bid}</Text>
+                                        </View>
+                                        <View>
+                                            <Ionicons 
+                                                name='heart'
+                                                size={20}
+                                                color={this.handleColor(currency.id)}
+                                                style={{ 
+                                                    paddingLeft: 10, 
+                                                    paddingRight: 20 
+                                                }}
+                                                onPress={() => this.handleFollowUnfollowFavorite(currency.id, getFavorites(access_token))}
+                                            />
+                                        </View>
+                                    </View>
+                                ))
+                            :
+                                data.map(currency => {
+                                    return (
+                                        <View 
+                                            key={currency.id} 
+                                            style={styles.currency}
+                                        >
+                                            <View style={styles.currencyInfo}>
+                                                <Text 
+                                                    onPress={() => this.props.navigation.navigate('Details', {
+                                                        displayName: currency.displayName,
+                                                        price: currency.price.bid,
+                                                        description: currency.baseInstrument.description,
+                                                        id: currency.id 
+                                                    })} 
+                                                >
+                                                    {currency.displayName}
+                                                </Text>
+                                                <Text>${currency.price.bid}</Text>
+                                            </View>
+                                            <View>
+                                                <Ionicons 
+                                                    name='heart'
+                                                    size={20}
+                                                    color={this.handleColor(currency.id)}
+                                                    style={{ 
+                                                        paddingLeft: 10, 
+                                                        paddingRight: 10 
+                                                    }}
+                                                    onPress={() => this.handleFollowUnfollowFavorite(currency.id)}
+                                                />
+                                            </View>
+                                        </View>
+                                    )
+                            })
+                        }
+                    </ScrollView>
                 }
-                <ScrollView style={styles.scrollSection}>
-                    {
-                        dataLoading === false && currency.length && filteredData.length ?
-                            filteredData.map(currency => (
-                                <View 
-                                    key={currency.id} 
-                                    style={styles.currency}
-                                >
-                                    <View style={styles.currencyInfo}>
-                                        <Text 
-                                            onPress={() => this.props.navigation.navigate('Details', {
-                                                displayName: currency.displayName,
-                                                price: currency.price.bid,
-                                                description: currency.baseInstrument.description,
-                                                id: currency.id 
-                                            })} 
-                                        >
-                                            {currency.displayName}
-                                        </Text>
-                                        <Text>${currency.price.bid}</Text>
-                                    </View>
-                                    <View>
-                                        <Ionicons 
-                                            name='heart'
-                                            size={20}
-                                            color='rgba(0, 0, 0, 0.22)'
-                                            style={{ 
-                                                paddingLeft: 10, 
-                                                paddingRight: 20 
-                                            }}
-                                            onPress={() => this.handleFollowUnfollowFavorite(currency.id)}
-                                        />
-                                    </View>
-                                </View>
-                            ))
-                        :
-                            data.map(currency => (
-                                <View 
-                                    key={currency.id} 
-                                    style={styles.currency}
-                                >
-                                    <View style={styles.currencyInfo}>
-                                        <Text 
-                                            onPress={() => this.props.navigation.navigate('Details', {
-                                                displayName: currency.displayName,
-                                                price: currency.price.bid,
-                                                description: currency.baseInstrument.description,
-                                                id: currency.id 
-                                            })} 
-                                        >
-                                            {currency.displayName}
-                                        </Text>
-                                        <Text>${currency.price.bid}</Text>
-                                    </View>
-                                    <View>
-                                        <Ionicons 
-                                            name='heart'
-                                            size={20}
-                                            color='rgba(0, 0, 0, 0.22)'
-                                            style={{ 
-                                                paddingLeft: 10, 
-                                                paddingRight: 10 
-                                            }}
-                                            onPress={() => this.handleFollowUnfollowFavorite(currency.id)}
-                                        />
-                                    </View>
-                                </View>
-                            ))
-                            
-                    }
-                </ScrollView>
                 {
                     addFavoriteLoading ?
                         <View style={styles.follwoUnfollowFavorite}>
@@ -179,20 +196,22 @@ class Search extends React.Component {
 
 const mapStateToProps = ({ 
     login: { access_token },
-    search: { data, filteredData, dataLoading, addFavoriteLoading, addFavoriteStatus }
+    search: { data, filteredData, dataLoading, addFavoriteLoading, addFavoriteStatus, favorites }
 }) => ({
     access_token,
     data,
     filteredData,
     dataLoading,
     addFavoriteLoading,
-    addFavoriteStatus
+    addFavoriteStatus,
+    favorites
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
     autoSearch,
     filterData,
-    addFavorites
+    addFavorites,
+    getFavorites
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Search);
@@ -204,7 +223,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     searchSection: {
-        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         borderRadius: 8,
@@ -222,6 +240,8 @@ const styles = StyleSheet.create({
         marginLeft: '1%',
         marginRight: '1%',
         marginBottom: 15,
+        paddingTop: 10,
+        paddingBottom: 10
     },
     inputSearch: {
         backgroundColor: 'transparent',
@@ -265,5 +285,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.22,
         shadowRadius: 2.22,
         elevation: 3,
+        justifyContent: 'center'
     }
 });

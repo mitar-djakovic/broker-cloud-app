@@ -61,7 +61,7 @@ export const autoSearch = (access_token) => {
 };
 
 export const getFavorites = (access_token) => {
-    console.log('accesTOKEN', access_token);
+    console.log('GET FFAVORITES', access_token);
 
     const getFavoritesRequest = () => {
         return {
@@ -92,7 +92,7 @@ export const getFavorites = (access_token) => {
 
         getFavoritesCall(access_token).then(res => {
             console.log('####', res);
-            if (res.length) {
+            if (res.length >= 0) {
                 dispatch(getFavoritesSucces(res));
             } else {
                 dispatch(getFavoritesError(res))
@@ -203,7 +203,7 @@ export const addFavorites = (access_token, symbolId, followStatus) => {
     return dispatch => {
         dispatch(followUnfollowRequest());
         
-        followUnfollowFavoriteCall(access_token, symbolId).then(res => {
+        followUnfollowFavoriteCall(access_token, symbolId, followStatus).then(res => {
             if(res.status == 200 && followStatus === true) {
                 dispatch(followUnfollowSuccess('Currency added to favorites'));
             } else if (res.status === 200 && followStatus === false) {

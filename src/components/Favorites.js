@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { getFavorites, addFavorites } from '../actions/components/search';
+import { getFavorites, addFavorites, autoSearch } from '../actions/components/search';
 import Ionicons from 'react-native-vector-icons/FontAwesome';
 
 class Favorites extends React.Component {
@@ -16,23 +16,24 @@ class Favorites extends React.Component {
 
     componentDidMount() {
         const { access_token, getFavorites } = this.props;
-        console.log('TOKEN ===>', access_token);
 
-        getFavorites(access_token)
+        getFavorites(access_token);
     }
 
     handleFollowUnfollowFavorite = (symbolId) => {
         const { addFavorites, access_token, getFavorites } = this.props;
 
-        addFavorites(access_token, symbolId, false, () => {
-            console.log('jel ovo radi')
-            getFavorites
-        });
+        addFavorites(access_token, symbolId, false);
+        getFavorites(access_token);
     };
 
     render() {
-        const { favorites, favoritesLoading, addFavoriteLoading} = this.props;
-        console.log('FAVORITES', favorites)
+        const { 
+            favorites, favoritesLoading, addFavoriteLoading, 
+            access_token, getFavorites, autoSearch
+        } = this.props;
+        console.log('FAVORITES', favorites.length)
+
         return(
             <View style={styles.container}>
                 {
@@ -46,13 +47,8 @@ class Favorites extends React.Component {
                                 position: 'relative',
                                 top: '40%'
                             }}
-                        /> : null
-                }
-                {
-                    favoritesLoading === false ? 
-                        <ScrollView 
-                            style={styles.scrollSection} 
-                        >
+                        /> : 
+                        <ScrollView style={styles.scrollSection}>
                             {
                                 favorites.length === 0 ? 
                                     <Text style={styles.noFav}>No Favorites</Text> :
@@ -78,23 +74,25 @@ class Favorites extends React.Component {
                                                 <Ionicons 
                                                     name='heart'
                                                     size={20}
-                                                    color='rgba(0, 0, 0, 0.22)'
+                                                    color='#FF00C9'
                                                     style={{ 
                                                         paddingLeft: 10, 
                                                         paddingRight: 20 
                                                     }}
-                                                    onPress={() => this.handleFollowUnfollowFavorite(fav.id)}
+                                                    onPress={
+                                                        () => this.handleFollowUnfollowFavorite(fav.id, getFavorites(access_token), autoSearch(access_token))
+                                                    }
                                                 />
                                             </View>
                                         </View>
                                     ))
                             }
-                        </ScrollView> : null
+                        </ScrollView>
                 }
                 {
                     addFavoriteLoading ?
                         <View style={styles.follwoUnfollowFavorite}>
-                            <Text>LOL</Text>
+                            <Text style={{ color: '#FFF'}}>Currency is removed from favorites</Text>
                         </View> 
                     : null
                 }
@@ -116,7 +114,8 @@ const mapStateToProps = ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
     getFavorites,
-    addFavorites
+    addFavorites,
+    autoSearch
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Favorites);
@@ -195,5 +194,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.22,
         shadowRadius: 2.22,
         elevation: 3,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });

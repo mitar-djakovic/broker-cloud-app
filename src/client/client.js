@@ -42,18 +42,6 @@ export const autoSearchCall = async (access_token) => {
     return markets;
 };
 
-// export const currecnyCall = async (access_token, currecyId) => {
-//     const headers = new Headers();
-//     headers.append('Authorization', `Bearer ${access_token}`);
-
-//     const userInfo = await fetch(`${url}/users/me`, { headers })
-//         .then(res => res.json());
-
-//     const currecy = await fetch(`${url}/users/${userInfo.id}/symbols/${currecyId}`, { headers });
-//     console.log('Currency ===>', currecy)
-//     return currecy;
-// }; 
-
 export const getFavoritesCall = async (access_token) => {
     const headers = new Headers();
     headers.append('Authorization', `Bearer ${access_token}`);
@@ -71,6 +59,7 @@ export const getFavoritesCall = async (access_token) => {
 };
 
 export const followUnfollowFavoriteCall = async (access_token, symbolId, followStatus) => {
+    console.log(followStatus)
     const headers = new Headers();
     headers.append('Authorization', `Bearer ${access_token}`);
     headers.append('Content-Type', 'application/json');
